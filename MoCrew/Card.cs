@@ -1,4 +1,4 @@
-namespace TheCrew;
+namespace MoCrew;
 
 public struct Card(Suit suit, byte value)
 {

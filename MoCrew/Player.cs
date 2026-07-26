@@ -1,4 +1,4 @@
-namespace TheCrew;
+namespace MoCrew;
 
 public class Player(string name)
 {
