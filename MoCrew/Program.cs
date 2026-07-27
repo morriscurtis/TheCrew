@@ -219,17 +219,19 @@ while (true)
 
 			if (!missionFailed && mission.MaxTrickDifference > 0)
 			{
-				for (int i = 1; i < playerCount; ++i)
+				int min = int.MaxValue, max = int.MinValue;
+				foreach (Player player in players)
 				{
-					if (Math.Abs(players[i - 1].TrickCount - players[i].TrickCount) > mission.MaxTrickDifference)
+					min = int.Min(min, player.TrickCount);
+					max = int.Max(max, player.TrickCount);
+				}
+				if (max - min > mission.MaxTrickDifference)
+				{
+					missionFailed = true;
+					if (printGames)
 					{
-						missionFailed = true;
-						if (printGames)
-						{
-							Console.ForegroundColor = ConsoleColor.Red;
-							Console.WriteLine($"Failed in trick #{trickNumber} - Trick counts diverged too much!");
-						}
-						break;
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.WriteLine($"Failed in trick #{trickNumber} - Trick counts diverged too much!");
 					}
 				}
 			}
