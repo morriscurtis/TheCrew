@@ -34,9 +34,7 @@ public class Player(string name)
 	private Card PlayCard(int chosenIndex)
 	{
 		Card chosenCard = Cards[chosenIndex];
-		int lastIndex = Cards.Count - 1;
-		Cards[chosenIndex] = Cards[lastIndex];
-		Cards.RemoveAt(lastIndex);
+		Cards.SwapRemoveAt(chosenIndex);
 		return chosenCard;
 	}
 }

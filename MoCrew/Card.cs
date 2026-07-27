@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace MoCrew;
 
 public struct Card(Suit suit, byte value)
@@ -5,7 +7,7 @@ public struct Card(Suit suit, byte value)
 	public Suit Suit = suit;
 	public byte Value = value;
 
-	public (char Letter, ConsoleColor Color) GetSuitLetterAndColor() => Suit switch
+	public readonly (char Letter, ConsoleColor Color) GetSuitLetterAndColor() => Suit switch
 	{
 		Suit.Rocket => ('R', ConsoleColor.White),
 		Suit.Blue => ('B', ConsoleColor.Blue),
@@ -16,9 +18,14 @@ public struct Card(Suit suit, byte value)
 	};
 
 	public readonly bool Beats(Card other)
-		=> Suit == Suit.Rocket && other.Suit != Suit.Rocket || Suit == other.Suit && Value > other.Value;
+		=> Suit == Suit.Rocket && other.Suit != Suit.Rocket
+		|| Suit == other.Suit && Value > other.Value;
 
-	public override string ToString() => $"{GetSuitLetterAndColor().Letter}{Value}";
+	public override readonly string ToString()
+		=> $"{GetSuitLetterAndColor().Letter}{Value}";
+
+	public readonly bool Equals(Card other)
+		=> other.Suit == Suit && other.Value == Value;
 }
 
 public enum Suit

@@ -1,7 +1,9 @@
 ﻿namespace MoCrew;
 
-public struct GameTask
+public struct GameTask(Card card, Player player, int dependencyIndex)
 {
-	public Player Player;
-	public Card card;
+	public Card Card = card;
+	public Player Player = player;
+	public int DependencyIndex = dependencyIndex;
+	public bool IsCompleted;
 }

@@ -2,38 +2,36 @@ namespace MoCrew;
 
 public class Dealer
 {
-	private static readonly Card[] cards = new Card[40];
+	private static readonly Card[] playingCards = new Card[40];
+	private static readonly Card[] taskCards = new Card[36];
 
 	static Dealer()
 	{
-		int i = 0;
+		int p = 0, t = 0;
 		for (byte s = 4; s >= 1; --s)
 		{
-			cards[i++] = new(Suit.Rocket, s);
+			playingCards[p++] = new(Suit.Rocket, s);
 			for (byte v = 1; v <= 9; ++v)
 			{
-				cards[i++] = new((Suit)s, v);
+				Card card = new((Suit)s, v);
+				playingCards[p++] = card;
+				taskCards[t++] = card;
 			}
 		}
 	}
 
-	public static void DealCards(Span<Player> players)
+	public static void DealPlayingCards(Span<Player> players)
 	{
-		Shuffle(cards.AsSpan(1..));
+		playingCards.AsSpan(1..).Shuffle();
 		for (int i = 0, n = players.Length; i < 40; ++i)
 		{
-			players[i % n].Cards.Add(cards[i]);
+			players[i % n].Cards.Add(playingCards[i]);
 		}
 	}
 
-	public static void Shuffle(Span<Card> cards)
+	public static ReadOnlySpan<Card> DealTaskCards()
 	{
-		Random rng = Random.Shared;
-		for (int n = cards.Length; n >= 2; --n)
-		{
-			int i = rng.Next(n);
-			int j = n - 1;
-			(cards[j], cards[i]) = (cards[i], cards[j]);
-		}
+		taskCards.Shuffle();
+		return taskCards.AsSpan();
 	}
 }

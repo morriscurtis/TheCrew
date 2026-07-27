@@ -101,6 +101,8 @@ public class Mission()
 	public SpecialCondition SpecialCondition;
 	public TaskDistribution TaskDistribution;
 
+	public int TotalTaskCount => BasicTaskCount + SequentialTaskCount + PriorityTaskCount;
+
 	public static Mission BasicTasks(int count) => new() { BasicTaskCount = count };
 	public static Mission SequentialTasks(int count) => new() { SequentialTaskCount = count };
 	public static Mission PriorityTasks(int count) => new() { PriorityTaskCount = count };
