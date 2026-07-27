@@ -22,11 +22,16 @@ public class Dealer
 
 	public static void DealPlayingCards(Span<Player> players)
 	{
+		// Keep rocket 4 at index 0, so player 1 is always captain
 		playingCards.AsSpan(1..).Shuffle();
+
 		for (int i = 0, n = players.Length; i < 40; ++i)
 		{
 			players[i % n].Cards.Add(playingCards[i]);
 		}
+
+		// Now put rocket 4 in a random position in player 1's hand
+		players[0].Cards.Swap(0, Random.Shared.Next(10));
 	}
 
 	public static ReadOnlySpan<Card> DealTaskCards()

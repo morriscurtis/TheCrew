@@ -11,6 +11,9 @@ public static class Util
 		list.RemoveAt(lastIndex);
 	}
 
+	public static void Swap<T>(this List<T> list, int a, int b)
+		=> (list[a], list[b]) = (list[b], list[a]);
+
 	public static void Shuffle<T>(this Span<T> span)
 	{
 		Random rng = Random.Shared;
