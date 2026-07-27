@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace MoCrew;
 
 public enum TaskDistribution
@@ -26,7 +28,6 @@ public enum SpecialCondition
 	EachRocketMustWinATrick,
 	EachRocketMustWinATrickInAscendingOrder,
 	DrawCardFromNeighborAfterFirstTrick,
-	AtMostOneTrickDifference,
 	PlayerLeftOfPink9WinsAllPinkCards,
 	OmegaTask,
 	OmegaTaskMustBeLastTrick,
@@ -34,7 +35,7 @@ public enum SpecialCondition
 	OneTileMayBeMovedToTaskWithoutTile,
 	OnePlayerMustWinFirstAndLastTrickWithoutRockets,
 	OneChosenPlayerMustWinExactlyOneTrickWithoutRockets,
-	CommanderMustWinFirstAndLastTrickAndAtMostOneTrickDifference,
+	CommanderMustWinFirstAndLastTrick,
 	CommanderChoosesPlayerForOnlyTheFirstFourTricksAndAnotherForOnlyTheLastTrick,
 }
 
@@ -42,101 +43,254 @@ public class Mission()
 {
 	public static readonly Mission[] AllMissions =
 	[
-		/* 01 */ BasicTasks(1),
-		/* 02 */ BasicTasks(2),
-		/* 03 */ PriorityTasks(2),
-		/* 04 */ BasicTasks(3),
-		/* 05 */ From(SpecialCondition.OneChosenPlayerWinsNoTricks),
-		/* 06 */ BasicTasks(1).AndSequentialTasks(2).And(Communication.Limited),
-		/* 07 */ BasicTasks(2).And(SpecialCondition.OmegaTask),
-		/* 08 */ PriorityTasks(3),
-		/* 09 */ From(SpecialCondition.OneTrickWithAValue1Card),
-		/* 10 */ BasicTasks(4),
-		/* 11 */ BasicTasks(3).AndPriorityTasks(1).And(Communication.OneChosenPlayerDisallowed),
-		/* 12 */ BasicTasks(3).And(SpecialCondition.DrawCardFromNeighborAfterFirstTrick),
-		/* 13 */ From(SpecialCondition.EachRocketMustWinATrick),
-		/* 14 */ BasicTasks(1).AndSequentialTasks(3).And(Communication.Limited),
-		/* 15 */ PriorityTasks(4),
-		/* 16 */ From(SpecialCondition.NoValue9CardMustWinATrick),
-		/* 17 */ BasicTasks(2).And(SpecialCondition.NoValue9CardMustWinATrick),
-		/* 18 */ BasicTasks(5).And(Communication.AfterFirstTrick),
-		/* 19 */ BasicTasks(4).AndPriorityTasks(1).And(Communication.AfterSecondTrick),
-		/* 20 */ BasicTasks(2).And(TaskDistribution.ByCommanderButHidden),
-		/* 21 */ BasicTasks(3).AndPriorityTasks(2).And(Communication.Limited),
-		/* 22 */ BasicTasks(1).AndSequentialTasks(4),
-		/* 23 */ PriorityTasks(5).And(SpecialCondition.TwoTilesMayBeSwapped),
-		/* 24 */ BasicTasks(6).And(TaskDistribution.ByCommander),
-		/* 25 */ BasicTasks(4).AndSequentialTasks(2).And(Communication.Limited),
-		/* 26 */ From(SpecialCondition.TwoTricksWithAValue1Card),
-		/* 27 */ BasicTasks(3).And(TaskDistribution.ByCommanderButHidden),
-		/* 28 */ BasicTasks(4).AndPriorityTasks(1).And(Communication.AfterSecondTrick),
-		/* 29 */ From(SpecialCondition.AtMostOneTrickDifference),
-		/* 30 */ BasicTasks(3).AndSequentialTasks(3).And(Communication.AfterFirstTrick),
-		/* 31 */ BasicTasks(3).AndPriorityTasks(3),
-		/* 32 */ BasicTasks(7).And(TaskDistribution.ByCommander),
-		/* 33 */ From(SpecialCondition.OneChosenPlayerMustWinExactlyOneTrickWithoutRockets),
-		/* 34 */ From(SpecialCondition.CommanderMustWinFirstAndLastTrickAndAtMostOneTrickDifference),
-		/* 35 */ BasicTasks(4).AndSequentialTasks(3),
-		/* 36 */ BasicTasks(5).AndPriorityTasks(2).And(TaskDistribution.ByCommander),
-		/* 37 */ BasicTasks(4).And(TaskDistribution.ByCommanderButHidden),
-		/* 38 */ BasicTasks(8).And(Communication.AfterSecondTrick),
-		/* 39 */ BasicTasks(5).AndSequentialTasks(3).And(Communication.Limited),
-		/* 40 */ BasicTasks(5).AndPriorityTasks(3).And(SpecialCondition.OneTileMayBeMovedToTaskWithoutTile),
-		/* 41 */ From(SpecialCondition.OnePlayerMustWinFirstAndLastTrickWithoutRockets),
-		/* 42 */ BasicTasks(9),
-		/* 43 */ BasicTasks(9).And(TaskDistribution.ByCommander),
-		/* 44 */ From(SpecialCondition.EachRocketMustWinATrickInAscendingOrder),
-		/* 45 */ BasicTasks(6).AndSequentialTasks(3),
-		/* 46 */ From(SpecialCondition.PlayerLeftOfPink9WinsAllPinkCards),
-		/* 47 */ BasicTasks(10),
-		/* 48 */ BasicTasks(2).And(SpecialCondition.OmegaTaskMustBeLastTrick),
-		/* 49 */ BasicTasks(7).AndSequentialTasks(3),
-		/* 50 */ From(SpecialCondition.CommanderChoosesPlayerForOnlyTheFirstFourTricksAndAnotherForOnlyTheLastTrick),
+		new() // Mission 1
+		{
+			BasicTaskCount = 1,
+		},
+		new() // Mission 2
+		{
+			BasicTaskCount = 2,
+		},
+		new() // Mission 3
+		{
+			PriorityTaskCount = 2,
+		},
+		new() // Mission 4
+		{
+			BasicTaskCount = 3,
+		},
+		new() // Mission 5
+		{
+			SpecialCondition = SpecialCondition.OneChosenPlayerWinsNoTricks,
+		},
+		new() // Mission 6
+		{
+			SequentialTaskCount = 2,
+			BasicTaskCount = 1,
+			Communication = Communication.Limited,
+		},
+		new() // Mission 7
+		{
+			BasicTaskCount = 2,
+			SpecialCondition = SpecialCondition.OmegaTask,
+		},
+		new() // Mission 8
+		{
+			PriorityTaskCount = 3,
+		},
+		new() // Mission 9
+		{
+			SpecialCondition = SpecialCondition.OneTrickWithAValue1Card,
+		},
+		new() // Mission 10
+		{
+			BasicTaskCount = 4,
+		},
+		new() // Mission 11
+		{
+			PriorityTaskCount = 1, BasicTaskCount = 3, Communication = Communication.OneChosenPlayerDisallowed,
+		},
+		new() // Mission 12
+		{
+			BasicTaskCount = 3,
+			SpecialCondition = SpecialCondition.DrawCardFromNeighborAfterFirstTrick,
+		},
+		new() // Mission 13
+		{
+			SpecialCondition = SpecialCondition.EachRocketMustWinATrick,
+		},
+		new() // Mission 14
+		{
+			SequentialTaskCount = 3,
+			BasicTaskCount = 1,
+			Communication = Communication.Limited,
+		},
+		new() // Mission 15
+		{
+			PriorityTaskCount = 4,
+		},
+		new() // Mission 16
+		{
+			SpecialCondition = SpecialCondition.NoValue9CardMustWinATrick,
+		},
+		new() // Mission 17
+		{
+			BasicTaskCount = 2,
+			SpecialCondition = SpecialCondition.NoValue9CardMustWinATrick,
+		},
+		new() // Mission 18
+		{
+			BasicTaskCount = 5,
+			Communication = Communication.AfterFirstTrick,
+		},
+		new() // Mission 19
+		{
+			PriorityTaskCount = 1,
+			BasicTaskCount = 4,
+			Communication = Communication.AfterSecondTrick,
+		},
+		new() // Mission 20
+		{
+			BasicTaskCount = 2,
+			TaskDistribution = TaskDistribution.ByCommanderButHidden,
+		},
+		new() // Mission 21
+		{
+			PriorityTaskCount =2,
+			BasicTaskCount = 3,
+			Communication = Communication.Limited,
+		},
+		new() // Mission 22
+		{
+			BasicTaskCount = 1,
+			SequentialTaskCount = 4,
+		},
+		new() // Mission 23
+		{
+			PriorityTaskCount = 5,
+			SpecialCondition = SpecialCondition.TwoTilesMayBeSwapped,
+		},
+		new() // Mission 24
+		{
+			BasicTaskCount = 6,
+			TaskDistribution = TaskDistribution.ByCommander,
+		},
+		new() // Mission 25
+		{
+			SequentialTaskCount = 2,
+			BasicTaskCount = 4,
+			Communication = Communication.Limited,
+		},
+		new() // Mission 26
+		{
+			SpecialCondition = SpecialCondition.TwoTricksWithAValue1Card,
+		},
+		new() // Mission 27
+		{
+			BasicTaskCount = 3,
+			TaskDistribution = TaskDistribution.ByCommanderButHidden,
+		},
+		new() // Mission 28
+		{
+			PriorityTaskCount = 1,
+			BasicTaskCount = 4,
+			Communication = Communication.AfterSecondTrick,
+		},
+		new() // Mission 29
+		{
+			MaxTrickDifference = 1,
+		},
+		new() // Mission 30
+		{
+			BasicTaskCount = 3,
+			SequentialTaskCount = 3,
+			Communication = Communication.AfterFirstTrick,
+		},
+		new() // Mission 31
+		{
+			PriorityTaskCount = 3,
+			BasicTaskCount = 3,
+		},
+		new() // Mission 32
+		{
+			BasicTaskCount = 7,
+			TaskDistribution = TaskDistribution.ByCommander,
+		},
+		new() // Mission 33
+		{
+			SpecialCondition = SpecialCondition.OneChosenPlayerMustWinExactlyOneTrickWithoutRockets,
+		},
+		new() // Mission 34
+		{
+			MaxTrickDifference = 1,
+			SpecialCondition = SpecialCondition.CommanderMustWinFirstAndLastTrick,
+		},
+		new() // Mission 35
+		{
+			SequentialTaskCount = 3,
+			BasicTaskCount = 4,
+		},
+		new() // Mission 36
+		{
+			PriorityTaskCount = 2,
+			BasicTaskCount = 5,
+			TaskDistribution = TaskDistribution.ByCommander,
+		},
+		new() // Mission 37
+		{
+			BasicTaskCount = 4,
+			TaskDistribution = TaskDistribution.ByCommanderButHidden,
+		},
+		new() // Mission 38
+		{
+			BasicTaskCount = 8,
+			Communication = Communication.AfterSecondTrick,
+		},
+		new() // Mission 39
+		{
+			SequentialTaskCount = 3,
+			BasicTaskCount = 5,
+			Communication = Communication.Limited,
+		},
+		new() // Mission 40
+		{
+			PriorityTaskCount = 3,
+			BasicTaskCount = 5,
+			SpecialCondition = SpecialCondition.OneTileMayBeMovedToTaskWithoutTile,
+		},
+		new() // Mission 41
+		{
+			SpecialCondition = SpecialCondition.OnePlayerMustWinFirstAndLastTrickWithoutRockets,
+		},
+		new() // Mission 42
+		{
+			BasicTaskCount = 9,
+		},
+		new() // Mission 43
+		{
+			BasicTaskCount = 9,
+			TaskDistribution = TaskDistribution.ByCommander,
+		},
+		new() // Mission 44
+		{
+			SpecialCondition = SpecialCondition.EachRocketMustWinATrickInAscendingOrder,
+		},
+		new() // Mission 45
+		{
+			SequentialTaskCount = 3,
+			BasicTaskCount = 6,
+		},
+		new() // Mission 46
+		{
+			SpecialCondition = SpecialCondition.PlayerLeftOfPink9WinsAllPinkCards,
+		},
+		new() // Mission 47
+		{
+			BasicTaskCount = 10,
+		},
+		new() // Mission 48
+		{
+			BasicTaskCount = 2,
+			SpecialCondition = SpecialCondition.OmegaTaskMustBeLastTrick,
+		},
+		new() // Mission 49
+		{
+			SequentialTaskCount = 3,
+			BasicTaskCount = 7,
+		},
+		new() // Mission 50
+		{
+			SpecialCondition = SpecialCondition.CommanderChoosesPlayerForOnlyTheFirstFourTricksAndAnotherForOnlyTheLastTrick,
+		},
 	];
 
-	public int BasicTaskCount;
-	public int SequentialTaskCount;
-	public int PriorityTaskCount;
-	public Communication Communication;
-	public SpecialCondition SpecialCondition;
-	public TaskDistribution TaskDistribution;
+	public int BasicTaskCount { init; get; }
+	public int SequentialTaskCount { init; get; }
+	public int PriorityTaskCount { init; get; }
+	public int MaxTrickDifference { init; get; }
+	public Communication Communication { init; get; }
+	public SpecialCondition SpecialCondition { init; get; }
+	public TaskDistribution TaskDistribution { init; get; }
 
 	public int TotalTaskCount => BasicTaskCount + SequentialTaskCount + PriorityTaskCount;
-
-	public static Mission BasicTasks(int count) => new() { BasicTaskCount = count };
-	public static Mission SequentialTasks(int count) => new() { SequentialTaskCount = count };
-	public static Mission PriorityTasks(int count) => new() { PriorityTaskCount = count };
-	public static Mission From(SpecialCondition value) => new() { SpecialCondition = value };
-
-	public Mission AndNormalTasks(int count)
-	{
-		BasicTaskCount = count;
-		return this;
-	}
-	public Mission AndSequentialTasks(int count)
-	{
-		SequentialTaskCount = count;
-		return this;
-	}
-	public Mission AndPriorityTasks(int count)
-	{
-		PriorityTaskCount = count;
-		return this;
-	}
-
-	public Mission And(SpecialCondition value)
-	{
-		SpecialCondition = value;
-		return this;
-	}
-	public Mission And(Communication value)
-	{
-		Communication = value;
-		return this;
-	}
-	public Mission And(TaskDistribution value)
-	{
-		TaskDistribution = value;
-		return this;
-	}
 }

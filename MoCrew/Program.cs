@@ -217,26 +217,21 @@ while (true)
 				}
 			}
 
-			switch (mission.SpecialCondition)
+			if (!missionFailed && mission.MaxTrickDifference > 0)
 			{
-				case SpecialCondition.AtMostOneTrickDifference:
-					if (!missionFailed)
+				for (int i = 1; i < playerCount; ++i)
+				{
+					if (Math.Abs(players[i - 1].TrickCount - players[i].TrickCount) > mission.MaxTrickDifference)
 					{
-						for (int i = 1; i < playerCount; ++i)
+						missionFailed = true;
+						if (printGames)
 						{
-							if (Math.Abs(players[i - 1].TrickCount - players[i].TrickCount) > 1)
-							{
-								missionFailed = true;
-								if (printGames)
-								{
-									Console.ForegroundColor = ConsoleColor.Red;
-									Console.WriteLine($"Failed in trick #{trickNumber} - Trick counts diverged too much!");
-								}
-								break;
-							}
+							Console.ForegroundColor = ConsoleColor.Red;
+							Console.WriteLine($"Failed in trick #{trickNumber} - Trick counts diverged too much!");
 						}
+						break;
 					}
-					break;
+				}
 			}
 			if (missionFailed || allTasksCompleted)
 			{
