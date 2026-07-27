@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace MoCrew;
 
 public struct Card(Suit suit, byte value)

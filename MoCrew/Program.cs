@@ -144,7 +144,7 @@ while (true)
 			if (printGames)
 			{
 				Console.ForegroundColor = ConsoleColor.Gray;
-				Console.Write($"#{trickNumber:00}: P{startingPlayerIndex + 1} =>");
+				Console.Write($"#{trickNumber:00}: {players[startingPlayerIndex].Name} =>");
 				foreach (Card card in playedCards[^playerCount..])
 				{
 					(char letter, ConsoleColor color) = card.GetSuitLetterAndColor();
