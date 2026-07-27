@@ -7,3 +7,10 @@ public struct GameTask(Card card, Player player, int dependencyIndex)
 	public int DependencyIndex = dependencyIndex;
 	public bool IsCompleted;
 }
+
+public enum DependencyType
+{
+	NoDependency,
+	MustBeCompleted,
+	MustNotBeCompleted,
+}

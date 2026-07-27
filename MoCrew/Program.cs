@@ -10,16 +10,20 @@ for (int i = 0; i < playerCount; ++i)
 List<Card> playedCards = new(playerCount);
 List<Player> trickWinners = new(maxTrickCount);
 List<GameTask> tasks = new(maxTrickCount);
-List<int> finishedTaskIndices = new(playerCount);
+List<int> completingTaskIndices = new(playerCount);
 List<Player> taskPlayers = new(maxTrickCount);
+List<string> failureReasons = [];
 
 bool printGames = true;
 
 Mission[] missions = Mission.AllMissions;
-int missionIndex = 0;
+int missionIndex = 4;
 while (true)
 {
 	Mission mission = missions[missionIndex];
+	bool missionCanFinishEarly = mission.MaxTrickDifference == 0
+		&& mission.SpecialCondition != SpecialCondition.OneChosenPlayerWinsNoTricks;
+	int totalTaskCount = mission.TotalTaskCount;
 
 	int attemptNumber = 0;
 	while (true)
@@ -39,8 +43,17 @@ while (true)
 			player.Reset();
 		}
 
+		switch (mission.SpecialCondition)
+		{
+			case SpecialCondition.OneChosenPlayerWinsNoTricks:
+				int sickPlayerIndex = Random.Shared.Next(1, playerCount - 1);
+				players[sickPlayerIndex].IsSick = true;
+				break;
+		}
+
 		Dealer.DealPlayingCards(players);
 
+		failureReasons.Clear();
 		playedCards.Clear();
 		trickWinners.Clear();
 		tasks.Clear();
@@ -118,9 +131,9 @@ while (true)
 		}
 
 		int startingPlayerIndex = 0;
-		bool missionFailed = false;
+		int completedTaskCount = 0;
 		int trickNumber = 1;
-		for (; trickNumber <= maxTrickCount; ++trickNumber)
+		for (; trickNumber <= maxTrickCount && failureReasons.Count == 0; ++trickNumber)
 		{
 			Player startingPlayer = players[startingPlayerIndex];
 			int trickWinnerIndex = startingPlayerIndex;
@@ -145,7 +158,7 @@ while (true)
 			{
 				Console.ForegroundColor = ConsoleColor.Gray;
 				Console.Write($"#{trickNumber:00}: {players[startingPlayerIndex].Name} =>");
-				foreach (Card card in playedCards[^playerCount..])
+				foreach (Card card in playedCards.AsReadOnlySpan()[^playerCount..])
 				{
 					(char letter, ConsoleColor color) = card.GetSuitLetterAndColor();
 					Console.ForegroundColor = color;
@@ -154,70 +167,56 @@ while (true)
 				Console.ForegroundColor = ConsoleColor.Gray;
 				Console.WriteLine($" => {players[trickWinnerIndex].Name}");
 			}
+
 			startingPlayerIndex = trickWinnerIndex;
 			Player trickWinner = players[trickWinnerIndex];
 			trickWinner.TrickCount += 1;
 			trickWinners.Add(trickWinner);
 
-			finishedTaskIndices.Clear();
-			foreach (Card card in playedCards[^playerCount..])
+			completingTaskIndices.Clear();
+			foreach (Card card in playedCards.AsReadOnlySpan()[^playerCount..])
 			{
 				for (int t = 0; t < tasks.Count; t++)
 				{
-					var task = tasks[t];
+					GameTask task = tasks[t];
 					if (card.Equals(task.Card))
 					{
 						if (task.Player == trickWinner)
 						{
 							task.IsCompleted = true;
 							tasks[t] = task;
-							finishedTaskIndices.Add(t);
+							completingTaskIndices.Add(t);
+							++completedTaskCount;
 						}
 						else
 						{
-							missionFailed = true;
-							if (printGames)
-							{
-								Console.ForegroundColor = ConsoleColor.Red;
-								Console.WriteLine($"Failed in trick #{trickNumber} - Task completed by wrong player!");
-							}
+							failureReasons.Add("Task completed by wrong player!");
 							break;
 						}
 					}
 				}
-				if (missionFailed)
+				if (failureReasons.Count > 0)
 				{
 					break;
 				}
 			}
-
-			for (int i = 0, n = finishedTaskIndices.Count; i < n; ++i)
+			for (int i = 0, n = completingTaskIndices.Count; i < n; ++i)
 			{
-				int t = finishedTaskIndices[i];
+				int t = completingTaskIndices[i];
 				int d = tasks[t].DependencyIndex;
 				if (d >= 0 && !tasks[d].IsCompleted)
 				{
-					missionFailed = true;
-					if (printGames)
-					{
-						Console.ForegroundColor = ConsoleColor.Red;
-						Console.WriteLine($"Failed in trick #{trickNumber} - Tasks completed in wrong order!");
-					}
+					failureReasons.Add("Tasks completed in wrong order!");
 					break;
 				}
 			}
 
-			bool allTasksCompleted = true;
-			foreach (GameTask task in tasks)
+			if (trickWinner.IsSick)
 			{
-				if (!task.IsCompleted)
-				{
-					allTasksCompleted = false;
-					break;
-				}
+				failureReasons.Add("Sick player won a trick!");
 			}
 
-			if (!missionFailed && mission.MaxTrickDifference > 0)
+			if (mission.MaxTrickDifference > 0)
 			{
 				int min = int.MaxValue, max = int.MinValue;
 				foreach (Player player in players)
@@ -227,44 +226,37 @@ while (true)
 				}
 				if (max - min > mission.MaxTrickDifference)
 				{
-					missionFailed = true;
-					if (printGames)
-					{
-						Console.ForegroundColor = ConsoleColor.Red;
-						Console.WriteLine($"Failed in trick #{trickNumber} - Trick counts diverged too much!");
-					}
+					failureReasons.Add("Trick counts diverged too much!");
 				}
 			}
-			if (missionFailed || allTasksCompleted)
+
+			if (missionCanFinishEarly && completedTaskCount == totalTaskCount && failureReasons.Count == 0)
 			{
 				break;
 			}
 		}
-		if (!missionFailed)
+		if (trickNumber > maxTrickCount && completedTaskCount != totalTaskCount)
 		{
-			foreach (GameTask task in tasks)
-			{
-				if (!task.IsCompleted)
-				{
-					missionFailed = true;
-					if (printGames)
-					{
-						Console.ForegroundColor = ConsoleColor.Red;
-						Console.WriteLine($"Failed - Not all tasks were completed!");
-					}
-					break;
-				}
-			}
+			failureReasons.Add("Not all tasks were completed!");
 		}
-		if (!missionFailed)
+
+		Console.WriteLine();
+		if (failureReasons.Count == 0)
 		{
 			Console.ForegroundColor = ConsoleColor.Cyan;
-			Console.WriteLine($"Mission #{missionIndex + 1} accomplished in attempt #{attemptNumber} in trick #{trickNumber}!");
-			if (printGames)
-			{
-				Console.WriteLine();
-			}
+			Console.WriteLine(printGames ? "Mission completed!\n"
+				: $"Mission #{missionIndex + 1} completed in attempt #{attemptNumber} in trick #{trickNumber}!\n");
 			break;
+		}
+		else if (printGames)
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine($"Mission failed:");
+			foreach (string failureReason in failureReasons)
+			{
+				Console.Write("- ");
+				Console.WriteLine(failureReason);
+			}
 		}
 		if (printGames)
 		{

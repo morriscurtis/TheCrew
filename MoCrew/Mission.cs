@@ -1,12 +1,10 @@
-using System.Net;
-
 namespace MoCrew;
 
 public enum TaskDistribution
 {
-	PlayersChoice,
-	ByCommander,
-	ByCommanderButHidden,
+	PlayersChoose,
+	CommanderDistributesEvenly,
+	CommanderChoosesSinglePlayer,
 }
 
 public enum Communication
@@ -36,7 +34,7 @@ public enum SpecialCondition
 	OnePlayerMustWinFirstAndLastTrickWithoutRockets,
 	OneChosenPlayerMustWinExactlyOneTrickWithoutRockets,
 	CommanderMustWinFirstAndLastTrick,
-	CommanderChoosesPlayerForOnlyTheFirstFourTricksAndAnotherForOnlyTheLastTrick,
+	OnePlayerWinsOnlyTheFirstFourTricksAndAnotherPlayerOnlyTheLastTrick,
 }
 
 public class Mission()
@@ -88,7 +86,9 @@ public class Mission()
 		},
 		new() // Mission 11
 		{
-			PriorityTaskCount = 1, BasicTaskCount = 3, Communication = Communication.OneChosenPlayerDisallowed,
+			PriorityTaskCount = 1,
+			BasicTaskCount = 3,
+			Communication = Communication.OneChosenPlayerDisallowed,
 		},
 		new() // Mission 12
 		{
@@ -132,11 +132,11 @@ public class Mission()
 		new() // Mission 20
 		{
 			BasicTaskCount = 2,
-			TaskDistribution = TaskDistribution.ByCommanderButHidden,
+			TaskDistribution = TaskDistribution.CommanderChoosesSinglePlayer,
 		},
 		new() // Mission 21
 		{
-			PriorityTaskCount =2,
+			PriorityTaskCount = 2,
 			BasicTaskCount = 3,
 			Communication = Communication.Limited,
 		},
@@ -153,7 +153,7 @@ public class Mission()
 		new() // Mission 24
 		{
 			BasicTaskCount = 6,
-			TaskDistribution = TaskDistribution.ByCommander,
+			TaskDistribution = TaskDistribution.CommanderDistributesEvenly,
 		},
 		new() // Mission 25
 		{
@@ -168,17 +168,19 @@ public class Mission()
 		new() // Mission 27
 		{
 			BasicTaskCount = 3,
-			TaskDistribution = TaskDistribution.ByCommanderButHidden,
+			TaskDistribution = TaskDistribution.CommanderChoosesSinglePlayer,
 		},
 		new() // Mission 28
 		{
 			PriorityTaskCount = 1,
 			BasicTaskCount = 4,
+			SpecialCondition = SpecialCondition.OmegaTask,
 			Communication = Communication.AfterSecondTrick,
 		},
 		new() // Mission 29
 		{
 			MaxTrickDifference = 1,
+			Communication = Communication.Limited,
 		},
 		new() // Mission 30
 		{
@@ -194,7 +196,7 @@ public class Mission()
 		new() // Mission 32
 		{
 			BasicTaskCount = 7,
-			TaskDistribution = TaskDistribution.ByCommander,
+			TaskDistribution = TaskDistribution.CommanderDistributesEvenly,
 		},
 		new() // Mission 33
 		{
@@ -214,12 +216,12 @@ public class Mission()
 		{
 			PriorityTaskCount = 2,
 			BasicTaskCount = 5,
-			TaskDistribution = TaskDistribution.ByCommander,
+			TaskDistribution = TaskDistribution.CommanderDistributesEvenly,
 		},
 		new() // Mission 37
 		{
 			BasicTaskCount = 4,
-			TaskDistribution = TaskDistribution.ByCommanderButHidden,
+			TaskDistribution = TaskDistribution.CommanderChoosesSinglePlayer,
 		},
 		new() // Mission 38
 		{
@@ -249,7 +251,7 @@ public class Mission()
 		new() // Mission 43
 		{
 			BasicTaskCount = 9,
-			TaskDistribution = TaskDistribution.ByCommander,
+			TaskDistribution = TaskDistribution.CommanderDistributesEvenly,
 		},
 		new() // Mission 44
 		{
@@ -280,7 +282,7 @@ public class Mission()
 		},
 		new() // Mission 50
 		{
-			SpecialCondition = SpecialCondition.CommanderChoosesPlayerForOnlyTheFirstFourTricksAndAnotherForOnlyTheLastTrick,
+			SpecialCondition = SpecialCondition.OnePlayerWinsOnlyTheFirstFourTricksAndAnotherPlayerOnlyTheLastTrick,
 		},
 	];
 

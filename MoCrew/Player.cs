@@ -5,11 +5,13 @@ public class Player(string name)
 	public string Name = name;
 	public List<Card> Cards = new(10);
 	public int TrickCount = 0;
+	public bool IsSick = false;
 
 	public void Reset()
 	{
 		Cards.Clear();
 		TrickCount = 0;
+		IsSick = false;
 	}
 
 	public Card PlayCard() => PlayCard(Random.Shared.Next(Cards.Count));
