@@ -17,7 +17,7 @@ List<string> failureReasons = [];
 bool printGames = true;
 
 Mission[] missions = Mission.AllMissions;
-int missionIndex = 4;
+int missionIndex = 0;
 while (true)
 {
 	Mission mission = missions[missionIndex];
