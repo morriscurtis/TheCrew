@@ -5,11 +5,11 @@ using System.Text;
 
 namespace MarkusCrew.Players
 {
-    internal class Player(int position, IEnumerable<Card> cards)
+    internal class Player(int position, List<Card> cards)
     {
         public int Position { get; init; } = position;
 
-        public IEnumerable<Card> Cards { get; init; } = cards;
+        public List<Card> Cards { get; init; } = cards;
 
         public List<Card> PlayedCards { get; } = new List<Card>();
 
@@ -37,7 +37,7 @@ namespace MarkusCrew.Players
             }
 
             var currentHand = CurrentHand;
-            var availableCards = currentHand.Where(item => item.suit == card.suit);
+            var availableCards = currentHand.Where(item => item.suit == card.suit).ToList();
             if (availableCards.Any())
             {
                 return availableCards.First();
