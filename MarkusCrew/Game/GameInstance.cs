@@ -42,6 +42,7 @@ namespace MarkusCrew.Game
             {
                 Round round = new Round(players, 1, startPlayer);
                 rounds.Add(round);
+                round.PlayRound();
                 startPlayer = round.RoundWinner;
             }
         }
@@ -49,12 +50,13 @@ namespace MarkusCrew.Game
         private void InitializePlayers()
         {
             IEnumerable<Card> allCards = Deck.GetShuffledCards();
-
+            Card startCard = new Card(4, Deck.AllSuits[SuitType.Rocket]);
             for (int i = 0; i < 4; i++)
             {
-                Player newPlayer = new Player(i, allCards.Take(new Range(i * 10, i * 10 + 10)));
+                Range range = new Range(i * 10, i * 10 + 10);
+                Player newPlayer = new Player(i, allCards.Take(range).ToList());
                 players.Add(newPlayer);
-                if(newPlayer.Cards.Contains(new Card(4, Suit.Rocket)))
+                if(newPlayer.Cards.Contains(startCard))
                 {
                     initialStartPlayer = newPlayer;
                 }

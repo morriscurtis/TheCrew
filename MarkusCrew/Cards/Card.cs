@@ -16,17 +16,34 @@ namespace MarkusCrew.Cards
                 return true; 
             }
 
-            if(otherCard.suit == suit)
+            if(otherCard.suit.Equals(suit))
             {
                 return number > otherCard.number;
             }
 
-            if(suit == Suit.Rocket) 
+            if(suit.Type.Equals(SuitType.Rocket) ) 
             { 
                 return true; 
             }
 
             return false;
+        }
+
+        public virtual bool Equals(Card? card)
+        {
+            return card is not null &&
+                   number == card.number &&
+                   EqualityComparer<Suit>.Default.Equals(suit, card.suit);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(number, suit);
+        }
+
+        public override string? ToString()
+        {
+            return suit.ToString() + $" {number} ";
         }
     }
 }
