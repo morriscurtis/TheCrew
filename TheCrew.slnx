@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="MarkusCrew/MarkusCrew.csproj" Id="152f5011-ea7c-4c56-863b-bdc307621c8f" />
+  <Project Path="MarkusCrewUnitTests/MarkusCrewUnitTests.csproj" Id="ed74c82e-bab8-4215-be36-bf1a45a071e4" />
   <Project Path="MoCrew\MoCrew.csproj" />
 </Solution>
