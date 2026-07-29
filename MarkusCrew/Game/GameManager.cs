@@ -1,13 +1,11 @@
-﻿using MarkusCrew.Task;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MarkusCrew.Game.Missions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MarkusCrew.Game
 {
-    internal class GameManager(int missionId)
+    internal class GameManager(IServiceProvider services)
     {
-        public int MissionId { get; } = missionId;
+        public IServiceProvider Services { get; } = services;
 
         public int SimulateMission()
         {
@@ -15,8 +13,8 @@ namespace MarkusCrew.Game
             bool retry = true;
             while (retry) {
                 counter++;
-                GameInstance instance = new GameInstance(missionId);
-                retry = !instance.SimulateInstance();
+                IMission mission = Services.GetService<IMission>();
+                retry = !mission.SimulateInstance();
             }
 
             return counter;

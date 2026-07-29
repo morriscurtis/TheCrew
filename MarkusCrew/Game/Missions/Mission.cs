@@ -1,21 +1,20 @@
 ﻿using MarkusCrew.Cards;
+using MarkusCrew.Game.Missions.Options;
 using MarkusCrew.Players;
 using MarkusCrew.Task;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace MarkusCrew.Game
+namespace MarkusCrew.Game.Missions
 {
-    internal class GameInstance(int missionId)
+    internal class Mission(MissionOptions options, ITaskFactory taskFactory) : IMission
     {
-        public int MissionId { get; } = missionId;
+        public MissionOptions Options { get; } = options;
+        public ITaskFactory TaskFactory { get; } = taskFactory;
 
         private List<Player> players = new List<Player>(4);
 
         private List<Round> rounds = new List<Round>();
 
-        private List<BasicGameTask> tasks = new List<BasicGameTask>();
+        private List<GameTask> tasks = new List<GameTask>();
 
         private Player initialStartPlayer;
 
@@ -29,10 +28,7 @@ namespace MarkusCrew.Game
 
         private void InitializeTasks()
         {
-            
-            BasicGameTask task = new BasicGameTask(Deck.GetRandomCard(), players[Random.Shared.Next(0,4)]);
-            task.CompleteRounds(rounds);
-            tasks.Add(task);
+            tasks = TaskFactory.CreateTasksForMission(Options.MissionIds.First(), players, rounds);
         }
 
         private void SimulateRounds()
@@ -56,7 +52,7 @@ namespace MarkusCrew.Game
                 Range range = new Range(i * 10, i * 10 + 10);
                 Player newPlayer = new Player(i, allCards.Take(range).ToList());
                 players.Add(newPlayer);
-                if(newPlayer.Cards.Contains(startCard))
+                if (newPlayer.Cards.Contains(startCard))
                 {
                     initialStartPlayer = newPlayer;
                 }

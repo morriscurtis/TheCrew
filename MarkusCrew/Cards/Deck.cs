@@ -47,10 +47,12 @@ namespace MarkusCrew.Cards
             return AllCards.Shuffle().ToList();
         }
 
-        public static Card GetRandomCard()
+        public static List<Card> GetRandomCards(int amount)
         {
-            int rng = Random.Shared.Next(0, AllCards.Count);
-            return AllCards[rng];
+            List<int> numbers = Enumerable.Range(0, 40).ToList();
+            List<int> shuffledNumbers = numbers.Shuffle().Take(amount).ToList();
+
+            return shuffledNumbers.Select(item => AllCards[item]).ToList();
         }
     }
 }
